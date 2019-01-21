@@ -22,14 +22,14 @@ def evaluate_policy(policy, eval_episodes=10):
 
 	avg_reward /= eval_episodes
 
-	print "---------------------------------------"
-	print "Evaluation over %d episodes: %f" % (eval_episodes, avg_reward)
-	print "---------------------------------------"
+	print("---------------------------------------")
+	print("Evaluation over {} episodes: {}".format(eval_episodes, avg_reward))
+	print("---------------------------------------")
 	return avg_reward
 
 
 if __name__ == "__main__":
-	
+
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--env_name", default="Hopper-v1")				# OpenAI gym environment name
 	parser.add_argument("--seed", default=0, type=int)					# Sets Gym, PyTorch and Numpy seeds
@@ -40,9 +40,9 @@ if __name__ == "__main__":
 
 	file_name = "BCQ_%s_%s" % (args.env_name, str(args.seed))
 	buffer_name = "%s_%s_%s" % (args.buffer_type, args.env_name, str(args.seed))
-	print "---------------------------------------"
-	print "Settings: " + file_name
-	print "---------------------------------------"
+	print("---------------------------------------")
+	print("Settings: " + file_name)
+	print("---------------------------------------")
 
 	if not os.path.exists("./results"):
 		os.makedirs("./results")
@@ -52,9 +52,9 @@ if __name__ == "__main__":
 	env.seed(args.seed)
 	torch.manual_seed(args.seed)
 	np.random.seed(args.seed)
-	
+
 	state_dim = env.observation_space.shape[0]
-	action_dim = env.action_space.shape[0] 
+	action_dim = env.action_space.shape[0]
 	max_action = float(env.action_space.high[0])
 
 	# Initialize policy
@@ -63,18 +63,18 @@ if __name__ == "__main__":
 	# Load buffer
 	replay_buffer = utils.ReplayBuffer()
 	replay_buffer.load(buffer_name)
-	
+
 	evaluations = []
 
 	episode_num = 0
-	done = True 
+	done = True
 
 	training_iters = 0
-	while training_iters < args.max_timesteps: 
+	while training_iters < args.max_timesteps:
 		pol_vals = policy.train(replay_buffer, iterations=int(args.eval_freq))
 
 		evaluations.append(evaluate_policy(policy))
 		np.save("./results/" + file_name, evaluations)
 
 		training_iters += args.eval_freq
-		print "Training iterations: " + str(training_iters)
+		print("Training iterations: " + str(training_iters))
