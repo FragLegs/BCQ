@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 # Code based on:
 # https://github.com/openai/baselines/blob/master/baselines/deepq/replay_buffer.py
@@ -33,8 +34,12 @@ class ReplayBuffer(object):
             np.array(done).reshape(-1, 1)
         )
 
-    def save(self, filename):
-        np.save('./buffers/{}.npy'.format(filename), self.storage)
+    def save(self, filename, directory):
+        np.save(
+            os.path.join(directory, '{}.npy'.format(filename)), self.storage
+        )
 
-    def load(self, filename):
-        self.storage = np.load('./buffers/{}.npy'.format(filename))
+    def load(self, filename, directory):
+        self.storage = np.load(
+            os.path.join(directory, '{}.npy'.format(filename))
+        )

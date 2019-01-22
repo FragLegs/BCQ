@@ -3,6 +3,7 @@ import torch
 import gym
 import argparse
 import os
+import wandb
 
 import utils
 import DDPG
@@ -10,6 +11,13 @@ import DDPG
 # Shortened version of code originally found at https://github.com/sfujim/TD3
 
 if __name__ == '__main__':
+    config = {
+        'expert': 'DDPG',
+        'computer': os.environ.get('COMPUTER_NAME', 'unknown'),
+        'device': DDPG.device.type,
+    }
+
+    wandb.init(config=config, job_type=__file__[:-len('.py')])
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--env_name', default='Hopper-v2')           # OpenAI gym environment name
@@ -19,13 +27,20 @@ if __name__ == '__main__':
     parser.add_argument('--expl_noise', default=0.1, type=float)     # Std of Gaussian exploration noise
     args = parser.parse_args()
 
+    wandb.config.update(args)
+
+    directory = os.path.join(wandb.run.dir, 'experts')
+
+    # save checkpoints to W&B as we go
+    wandb.save(os.path.join(directory, '*chkpt*'))
+
     file_name = 'DDPG_{}_{}'.format(args.env_name, str(args.seed))
     print('---------------------------------------')
     print('Settings: ' + file_name)
     print('---------------------------------------')
 
-    if not os.path.exists('./pytorch_models'):
-        os.makedirs('./pytorch_models')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
     env = gym.make(args.env_name)
 
@@ -56,11 +71,23 @@ if __name__ == '__main__':
                 print('Total T: {} Episode Num: {} Episode T: {} Reward: {}'.format(
                     total_timesteps, episode_num, episode_timesteps, episode_reward
                 ))
+
+                # log episode to W&B
+                wandb.log({
+                    'episode': episode_num,
+                    'reward': episode_reward,
+                    'timesteps': episode_timesteps,
+                    'total_timesteps': total_timesteps
+                })
+
                 policy.train(replay_buffer, episode_timesteps)
 
-            # Save policy
-            if total_timesteps % 1e5 == 0:
-                policy.save(file_name, directory='./pytorch_models')
+                # Save policy
+                if episode_num % 1000 == 0:
+                    policy.save(
+                        '{}-chkpt-{}'.format(file_name, episode_num),
+                        directory=directory
+                    )
 
             # Reset environment
             obs = env.reset()
@@ -96,4 +123,4 @@ if __name__ == '__main__':
         total_timesteps += 1
 
     # Save final policy
-    policy.save(file_name, directory='./pytorch_models')
+    policy.save(file_name, directory=directory)
