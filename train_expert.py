@@ -45,6 +45,8 @@ if __name__ == '__main__':
     total_timesteps = 0
     episode_num = 0
     done = True
+    episode_reward = None
+    episode_timesteps = None
 
     while total_timesteps < args.max_timesteps:
 
@@ -57,7 +59,7 @@ if __name__ == '__main__':
                 policy.train(replay_buffer, episode_timesteps)
 
             # Save policy
-            if total_timesteps.format1e5 == 0:
+            if total_timesteps % 1e5 == 0:
                 policy.save(file_name, directory='./pytorch_models')
 
             # Reset environment

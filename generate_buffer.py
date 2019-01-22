@@ -46,6 +46,8 @@ if __name__ == '__main__':
     total_timesteps = 0
     episode_num = 0
     done = True
+    episode_reward = None
+    episode_timesteps = None
 
     while total_timesteps < args.buffer_size:
         if done:
