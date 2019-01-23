@@ -77,6 +77,7 @@ if __name__ == '__main__':
                 wandb.log({
                     'reward': episode_reward,
                     'timesteps': episode_timesteps,
+                    'percent_done': total_timesteps / float(args.max_timesteps)
                 })
 
                 policy.train(replay_buffer, episode_timesteps)
