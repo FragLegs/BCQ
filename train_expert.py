@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     # Initialize policy and buffer
     policy = DDPG.DDPG(state_dim, action_dim, max_action)
-    wandb.watch(policy)
+    wandb.watch((policy.actor, policy.critic))
     replay_buffer = utils.ReplayBuffer()
 
     total_timesteps = 0
