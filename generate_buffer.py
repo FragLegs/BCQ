@@ -16,7 +16,7 @@ if __name__ == '__main__':
         'device': DDPG.device.type,
     }
 
-    wandb.init(config=config, job_type=__file__[:-len('.py')])
+    wandb.init(project='cs234', config=config, job_type=__file__[:-len('.py')])
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--env_name', default='Hopper-v1')         # OpenAI gym environment name
