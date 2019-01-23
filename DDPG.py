@@ -30,9 +30,6 @@ class Actor(nn.Module):
         a = self.max_action * torch.tanh(self.l3(a))
         return a
 
-    def to_log(self):
-        return {'l1': self.l1, 'l2': self.l2, 'l3': self.l3}
-
 
 # Returns a Q-value for given state/action pair
 class Critic(nn.Module):
@@ -48,9 +45,6 @@ class Critic(nn.Module):
         q = F.relu(self.l2(torch.cat([q, action], 1)))
         q = self.l3(q)
         return q
-
-    def to_log(self):
-        return {'l1': self.l1, 'l2': self.l2, 'l3': self.l3}
 
 
 class DDPG(object):

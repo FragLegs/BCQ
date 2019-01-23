@@ -55,6 +55,7 @@ if __name__ == '__main__':
 
     # Initialize policy and buffer
     policy = DDPG.DDPG(state_dim, action_dim, max_action)
+    wandb.watch(policy)
     replay_buffer = utils.ReplayBuffer()
 
     total_timesteps = 0
@@ -73,20 +74,10 @@ if __name__ == '__main__':
                 ))
 
                 # log episode to W&B
-                to_log = {
+                wandb.log({
                     'reward': episode_reward,
                     'timesteps': episode_timesteps,
-                }
-                to_log.update({
-                    'actor_{}'.format(key): value
-                    for key, value in policy.actor.to_log().items()
                 })
-                to_log.update({
-                    'critic_{}'.format(key): value
-                    for key, value in policy.critic.to_log().items()
-                })
-                wandb.log(to_log)
-
 
                 policy.train(replay_buffer, episode_timesteps)
 
