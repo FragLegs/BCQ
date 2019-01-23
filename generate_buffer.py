@@ -72,10 +72,8 @@ if __name__ == '__main__':
 
                 # log episode to W&B
                 wandb.log({
-                    'episode': episode_num,
                     'reward': episode_reward,
                     'timesteps': episode_timesteps,
-                    'total_timesteps': total_timesteps
                 })
 
             # Reset environment

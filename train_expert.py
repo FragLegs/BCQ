@@ -73,12 +73,20 @@ if __name__ == '__main__':
                 ))
 
                 # log episode to W&B
-                wandb.log({
-                    'episode': episode_num,
+                to_log = {
                     'reward': episode_reward,
                     'timesteps': episode_timesteps,
-                    'total_timesteps': total_timesteps
+                }
+                to_log.update({
+                    'actor_{}'.format(key): value
+                    for key, value in policy.actor.to_log().items()
                 })
+                to_log.update({
+                    'critic_{}'.format(key): value
+                    for key, value in policy.critic.to_log().items()
+                })
+                wandb.log(to_log)
+
 
                 policy.train(replay_buffer, episode_timesteps)
 
